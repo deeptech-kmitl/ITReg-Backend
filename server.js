@@ -1,0 +1,39 @@
+const express = require('express');
+const { getStorage, getDownloadURL } = require('firebase-admin/storage');
+
+
+
+
+const app = express();
+const port = 3001; // Set your desired port number
+
+const { db } = require('./Firebase/FirebaseConfig.js');
+const {bucket} = require('./Firebase/FirebaseConfig.js');
+
+
+app.get('/', (req, res) => {
+    res.send('Hello, this is your backend!');
+  });
+
+app.post('/api/create', async (req, res) => {
+  // const { name, email, password } = req.body;
+  const user = { name:"rome" };
+  const userRef = await db.collection('users').add(user);
+  const userDoc = await userRef.get();
+  res.send(userDoc.data());
+
+});
+
+app.get('/api/img', async (req, res) => {
+  const fileRef = bucket.file('Python-Imports_Watermarked.ae72c8a00197.jpg');
+  const downloadURL= await getDownloadURL(fileRef);
+  console.log(downloadURL);
+  res.send(downloadURL);
+});
+
+
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+  
