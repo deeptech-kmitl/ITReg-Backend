@@ -16,6 +16,5 @@ const isLoggedIn = (req, res, next) => {
             console.log("verifying token error");
             res.status(401).json("error");
         })
-
-    module.exports = { isLoggedIn };
 }
+module.exports = { isLoggedIn };
