@@ -17,5 +17,5 @@ const isLoggedIn = (req, res, next) => {
             res.status(401).json("error");
         })
 
-
+    module.exports = { isLoggedIn };
 }
