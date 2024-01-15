@@ -1,7 +1,7 @@
 const { admin } = require("../Firebase/FirebaseConfig");
 
 const isLoggedIn = (req, res, next) => {
-    const token = req.header.authorization;
+    const token = req.headers.authorization;
 
     if(token){
         return res.status(401).json("unauthorize");
