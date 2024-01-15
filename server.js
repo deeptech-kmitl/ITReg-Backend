@@ -1,7 +1,6 @@
 const express = require('express');
 const { getStorage, getDownloadURL } = require('firebase-admin/storage');
-
-
+const cors = require("cors");
 
 
 const app = express();
@@ -9,6 +8,16 @@ const port = 3001; // Set your desired port number
 
 const { db } = require('./Firebase/FirebaseConfig.js');
 const {bucket} = require('./Firebase/FirebaseConfig.js');
+
+app.use(cors());
+app.use(express.json());
+
+//router
+const authenticationRouter = require('./routes/user/Authentication.js');
+
+app.use(authenticationRouter.router);
+
+//
 
 
 app.get('/', (req, res) => {
