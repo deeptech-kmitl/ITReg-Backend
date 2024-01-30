@@ -14,8 +14,9 @@ app.use(express.json());
 
 //router
 const authenticationRouter = require('./routes/user/Authentication.js');
-
+const addSubjectRouter = require("./routes/subject/addSubject.js")
 app.use(authenticationRouter.router);
+app.use(addSubjectRouter.router)
 
 //
 
