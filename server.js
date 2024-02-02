@@ -17,10 +17,12 @@ const authenticationRouter = require('./routes/user/Authentication.js');
 const subject = require("./routes/subject/subject.js")
 const question = require("./routes/subject/question.js")
 const comment = require("./routes/subject/comment.js")
+const post = require("./routes/post/post.js")
 app.use(authenticationRouter.router);
 app.use(subject.router)
 app.use(question.router)
 app.use(comment.router)
+app.use(post.router)
 //
 
 
