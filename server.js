@@ -14,10 +14,13 @@ app.use(express.json());
 
 //router
 const authenticationRouter = require('./routes/user/Authentication.js');
-const addSubjectRouter = require("./routes/subject/addSubject.js")
+const subject = require("./routes/subject/subject.js")
+const question = require("./routes/subject/question.js")
+const comment = require("./routes/subject/comment.js")
 app.use(authenticationRouter.router);
-app.use(addSubjectRouter.router)
-
+app.use(subject.router)
+app.use(question.router)
+app.use(comment.router)
 //
 
 

@@ -1,24 +1,38 @@
 const express = require("express");
 const { auth } = require("firebase-admin");
-const { admin } = require("../../Firebase/FirebaseConfig")
+const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
+//// Subjects
 router.get('/getAllSubjects', async (req, res) => {
-
-        const subjectsRef = db.collection('subjects');
-        const subject = await subjectsRef.get()
-        .then((querySnapshot) => {
+    try {
+        // data= [{A:1},{B:2},{C:3}]
+        const tempDoc = []
+        const subjectsRef = db.collection('subjects')
+        subjectsRef.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-              // doc.data() is the data of the document
-              console.log(doc.id, ' => ', doc.data());
-            });
-            res.status(201).json({ message: 'Add Subjects Success' });
-          })
-          .catch((error) => {
-            res.status(500).json({ error: 'Internal Server Error' });
-          });
-    
+                tempDoc.push({id:doc.id, ...doc.data()})
+            })
+            res.status(201).json(tempDoc);
+        })
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
+router.get('/getSubjects/:subjectId', async (req, res) => {
+    const subjectsRef = db.collection('subjects/14jMRogrxlCCUOqtOwHv').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            // doc.data() is the data of the document
+            console.log(doc.id, ' => ', doc.data());
+        });
+        res.status(201).json({ message: 'Show Subjects Success' });
+    })
+        .catch((error) => {
+            res.status(500).json({ error: 'Internal Server Error' });
+        });
+})
+
 router.post('/addSubject', async (req, res) => {
 
     try {
@@ -46,6 +60,7 @@ router.delete('/removeAllSubject', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     });
 });
+
 
 
 exports.router = router;
