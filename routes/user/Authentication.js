@@ -1,7 +1,7 @@
 const express = require("express");
 const { auth } = require("firebase-admin");
 const { admin }  = require("../../Firebase/FirebaseConfig")
-
+const { isLoggedIn } = require("../../middlewares/index")
 router = express.Router();
 
 router.post('/register', async (req, res) => {
@@ -18,7 +18,6 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 
 
 exports.router = router;
