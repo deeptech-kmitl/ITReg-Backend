@@ -26,7 +26,7 @@ router.post('/comment', async (req, res) => {
         const commentRef = await db.collection(`subjects/${subjectId}/questions/${questionId}/comments`).add({
             content,
             userId,
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            time: admin.firestore.FieldValue.serverTimestamp(),
         });
 
         // Return the ID of the newly created comment
