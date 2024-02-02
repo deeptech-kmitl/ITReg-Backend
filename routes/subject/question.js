@@ -26,7 +26,7 @@ router.post('/question', async (req, res) => {
 
         // Save comment to Firestore
         const questionRef = await db.collection(`subjects/${subjectId}/questions`).add({
-            content,
+            details,
             userId,
             time: admin.firestore.FieldValue.serverTimestamp(),
         });

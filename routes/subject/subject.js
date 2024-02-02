@@ -6,12 +6,11 @@ router = express.Router();
 //// Subjects
 router.get('/getAllSubjects', async (req, res) => {
     try {
-        // data= [{A:1},{B:2},{C:3}]
         const tempDoc = []
         const subjectsRef = db.collection('subjects')
         subjectsRef.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                tempDoc.push({id:doc.id, ...doc.data()})
+                tempDoc.push({ id: doc.id, ...doc.data() })
             })
             res.status(201).json(tempDoc);
         })
