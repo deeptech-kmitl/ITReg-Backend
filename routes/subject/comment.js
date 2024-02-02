@@ -21,7 +21,7 @@ router.get('/getComments/:subjectId/:questionId', async (req, res) => {
 })
 router.post('/comment', async (req, res) => {
     try {
-        const { subjectId, questionId, content, userId } = req.body;
+        const { subjectId, questionId, details, userId } = req.body;
         // Save comment to Firestore
         const commentRef = await db.collection(`subjects/${subjectId}/questions/${questionId}/comments`).add({
             details,

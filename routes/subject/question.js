@@ -22,7 +22,7 @@ router.get('/getQuestions/:subjectId', async (req, res) => {
 ///// Questions
 router.post('/question', async (req, res) => {
     try {
-        const { subjectId, userId, content } = req.body;
+        const { subjectId, userId, details } = req.body;
 
         // Save comment to Firestore
         const questionRef = await db.collection(`subjects/${subjectId}/questions`).add({
