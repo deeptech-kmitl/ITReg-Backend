@@ -37,6 +37,36 @@ router.post('/comment', async (req, res) => {
     }
 });
 
+//Edit 
+router.put('/comment', async (req, res) => {
+    try {
+        const { subjectId, userId, details, questionId, commentId } = req.body;
+
+        const questionRef = await db.collection(`subjects/${subjectId}/questions/${questionId}/comments`).doc(commentId).update({ 
+            details,
+            time:  admin.firestore.FieldValue.serverTimestamp(),
+            userId
+        })
+
+        res.status(200).json({ message: questionRef.id });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//Delete
+router.delete('/comment', async (req, res) => {
+    try {
+        const { subjectId ,questionId, commentId } = req.body;
+        const questionRef = await db.collection(`subjects/${subjectId}/questions/${questionId}/comments`).doc(commentId).delete()
+        res.status(200).json({ message: `Delete ${questionRef.id} Sucess` });
+    } catch (error) {
+
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 
 exports.router = router;

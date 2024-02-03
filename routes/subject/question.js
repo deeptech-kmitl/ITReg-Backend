@@ -39,10 +39,10 @@ router.post('/question', async (req, res) => {
 //Edit 
 router.put('/question', async (req, res) => {
     try {
-        const { subjectId, userId, content, questionId } = req.body;
+        const { subjectId, userId, details, questionId } = req.body;
 
         const questionRef = await db.collection(`subjects/${subjectId}/questions/`).doc(questionId).update({ 
-            content,
+            details,
             time:  admin.firestore.FieldValue.serverTimestamp(),
             userId
         })
