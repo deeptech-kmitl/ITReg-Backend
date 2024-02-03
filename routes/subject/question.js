@@ -35,20 +35,31 @@ router.post('/question', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+//Edit 
 router.put('/question', async (req, res) => {
     try {
-        const { subjectId, userId, content } = req.body;
+        const { subjectId, userId, content, questionId } = req.body;
 
-        res.status(201).json({ message: "Add Question Sucess" });
+        const questionRef = await db.collection(`subjects/${subjectId}/questions/`).doc(questionId).update({ 
+            content,
+            time:  admin.firestore.FieldValue.serverTimestamp(),
+            userId
+        })
+
+        res.status(200).json({ message: questionRef.id });
     } catch (error) {
-
+        console.log(error)
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+//Delete
 router.delete('/question', async (req, res) => {
     try {
-        const { subjectId, userId, content } = req.body;
-        res.status(201).json({ message: "Add Question Sucess" });
+        const { subjectId ,questionId } = req.body;
+        const questionRef = await db.collection(`subjects/${subjectId}/questions`).doc(questionId).delete()
+        res.status(200).json({ message: `Delete ${questionRef.id} Sucess` });
     } catch (error) {
 
         res.status(500).json({ error: 'Internal Server Error' });
