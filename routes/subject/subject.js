@@ -1569,7 +1569,7 @@ router.get('/getSubjects/:subjectId', async (req, res) => {
 router.post('/addSubject', async (req, res) => {
 
     try {
-        const data = require("../../subject.json")
+        const data = require("../../testSubject.json")
         data.forEach(async i => {
             console.log(i)
             const subjectRef = await db.collection('subjects').add(i)
