@@ -3,6 +3,7 @@ const { auth } = require("firebase-admin");
 const { admin } = require("../../Firebase/FirebaseConfig.js");
 const { db, bucket } = require('../../Firebase/FirebaseConfig.js');
 const multer = require('multer');
+const { getDownloadURL } = require("firebase-admin/storage");
 
 const router = express.Router();
 
@@ -10,32 +11,64 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.post('/newPost', upload.single('image'), async (req, res) => {
+router.get('/post', async (req, res) => {
     try {
-        const { Title, createBy, description } = req.body;
+        const tempDoc = [];
+        const postRef = db.collection(`post`);
+        postRef.get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                tempDoc.push({ ...doc.data() })
+            })
+            res.status(201).json(tempDoc);
+        })
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
 
-        // Save post to Firestore
-        const newPost = await db.collection(`post`).add({
-            Time: admin.firestore.FieldValue.serverTimestamp(),
-            Title,
-            createBy,
-            description,
-        });
+router.post('/newPost', upload.array('images'), async (req, res) => {
+    try {
+        const Post = req.body.Post;
+        const images = req.files;
 
-        // Upload image to Firebase Storage
-        if (req.file) {
-            const imageBuffer = req.file.buffer;
-            const fileName = `images/${newPost.id}.jpg`; // Change the extension as needed
+        const uploadedImageUrls = [];
 
-            const file = bucket.file(fileName);
-            await file.save(imageBuffer, {
-                metadata: {
-                    contentType: 'image/jpeg', // Change the content type based on your file type
-                },
-            });
+        if (images){
+            for (const image of images) {
+                if (image) {
+                    const imageBuffer = image.buffer;
+                    const fileName = `images/${image.fieldname + Math.random().toString(16).slice(2)}.jpg`; // Change the extension as needed
+    
+                    const file = bucket.file(fileName);
+                    await file.save(imageBuffer, {
+                        metadata: {
+                            contentType: 'image/jpeg', // Change the content type based on your file type
+                        },
+                    });
+    
+                    //get url when i upload
+                    const downloadURL = await getDownloadURL(file);
+                    uploadedImageUrls.push(downloadURL);
+    
+                }
+            }
         }
+        const data_post = {
+            id: req.body.id,
+            titlename: req.body.titlename,
+            name: req.body.name,
+            date: req.body.date,
+            time: req.body.time,
+            message: req.body.message,
+            image: uploadedImageUrls || [],
+            like: [],
+            comment: []
+        };
 
-        res.status(201).json({ message: newPost.id });
+        const newPost = await db.collection(`post`).add(
+            data_post
+        );
+        res.status(201).json(data_post);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
