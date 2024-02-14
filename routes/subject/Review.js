@@ -4,10 +4,24 @@ const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
 
+router.get('/getReview/:subjectId', async (req, res) => {
+    try {
+        tempDoc = []
+        const subjectId = req.params.subjectId
+        const reviewRef = await db.collection(`subjects/${subjectId}/reviews`)
+        reviewRef.get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                tempDoc.push({ id: doc.id, ...doc.data() })
+            })
+            res.status(201).json(tempDoc);
+        })
+    } catch (error) {
+        res.status(500).json({ error: error });
+    }
+});
 router.post('/newReview', async (req, res) => {
     try {
-        const { subjectId, userId, content ,rating,grade} = req.body;
-
+        const { subjectId, userId, content ,rating,grade, like,dislike} = req.body;
         // Save review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews`).add({
             userId,
@@ -16,8 +30,10 @@ router.post('/newReview', async (req, res) => {
             content,
             rating,
             grade,
+            like,
+            dislike
         });
-        res.status(201).json({ message: reviewRef.id });
+        res.status(201).json({ message: reviewRef });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
