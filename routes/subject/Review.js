@@ -59,11 +59,11 @@ router.put('/editReview', async (req, res) => {
 
 router.delete('/delReview', async (req, res) => {
     try {
-        const { subjectId,reviewId} = req.body;
-
+        const {subjectId,reviewId} = req.body;
+        console.log(req)
         // Update review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).delete();
-        res.status(201).json({ message: reviewRef.id });
+        res.status(201).json({ message: "success" });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
