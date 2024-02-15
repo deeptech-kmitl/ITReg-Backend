@@ -21,11 +21,11 @@ router.get('/getReview/:subjectId', async (req, res) => {
 });
 router.post('/newReview', async (req, res) => {
     try {
-        const { subjectId, userId, content ,rating,grade, like,dislike} = req.body;
+        const { subjectId, userId, content, rating, grade, like, dislike } = req.body;
         // Save review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews`).add({
             userId,
-            time:  admin.firestore.FieldValue.serverTimestamp(),
+            time: admin.firestore.FieldValue.serverTimestamp(),
             subjectId,
             content,
             rating,
@@ -40,12 +40,12 @@ router.post('/newReview', async (req, res) => {
 });
 router.put('/editReview', async (req, res) => {
     try {
-        const { subjectId, userId, content ,rating,grade,reviewId} = req.body;
+        const { subjectId, userId, content, rating, grade, reviewId } = req.body;
         console.log(req.body)
         // Update review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
             userId,
-            time:  admin.firestore.FieldValue.serverTimestamp(),
+            time: admin.firestore.FieldValue.serverTimestamp(),
             subjectId,
             content,
             rating,
@@ -59,19 +59,19 @@ router.put('/editReview', async (req, res) => {
 
 router.put('/editReviewLikes', async (req, res) => {
     try {
-        const { subjectId, userId,likeType,reviewId} = req.body;
+        const { subjectId, userId, likeType, reviewId } = req.body;
         console.log(req.body)
-        if(likeType == "like"){
+        if (likeType == "like") {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-                like:  admin.firestore.FieldValue.arrayUnion(userId) 
+                like: admin.firestore.FieldValue.arrayUnion(userId)
             });
-        }else{
+        } else {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-            dislike: admin.firestore.FieldValue.arrayUnion(userId) 
-        });
+                dislike: admin.firestore.FieldValue.arrayUnion(userId)
+            });
         }
         // Update review to Firestore
-        res.status(201).json({ message: "seccess"});
+        res.status(201).json({ message: "seccess" });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -79,19 +79,19 @@ router.put('/editReviewLikes', async (req, res) => {
 
 router.put('/delReviewLikes', async (req, res) => {
     try {
-        const { subjectId, userId,likeType,reviewId} = req.body;
+        const { subjectId, userId, likeType, reviewId } = req.body;
         console.log(req.body)
-        if(likeType == "like"){
+        if (likeType == "like") {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-                like:  admin.firestore.FieldValue.arrayRemove(userId) 
+                like: admin.firestore.FieldValue.arrayRemove(userId)
             });
-        }else{
+        } else {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-            dislike: admin.firestore.FieldValue.arrayRemove(userId) 
-        });
+                dislike: admin.firestore.FieldValue.arrayRemove(userId)
+            });
         }
         // Update review to Firestore
-        res.status(201).json({ message: "seccess"});
+        res.status(201).json({ message: "seccess" });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -99,7 +99,7 @@ router.put('/delReviewLikes', async (req, res) => {
 
 router.delete('/delReview', async (req, res) => {
     try {
-        const {subjectId,reviewId} = req.body;
+        const { subjectId, reviewId } = req.body;
         console.log(req)
         // Update review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).delete();
