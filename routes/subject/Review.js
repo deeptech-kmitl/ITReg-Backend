@@ -41,7 +41,7 @@ router.post('/newReview', async (req, res) => {
 router.put('/editReview', async (req, res) => {
     try {
         const { subjectId, userId, content ,rating,grade,reviewId} = req.body;
-
+        console.log(req.body)
         // Update review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
             userId,
@@ -52,6 +52,46 @@ router.put('/editReview', async (req, res) => {
             grade,
         });
         res.status(201).json({ message: reviewRef.id });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/editReviewLikes', async (req, res) => {
+    try {
+        const { subjectId, userId,likeType,reviewId} = req.body;
+        console.log(req.body)
+        if(likeType == "like"){
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+                like:  admin.firestore.FieldValue.arrayUnion(userId) 
+            });
+        }else{
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+            dislike: admin.firestore.FieldValue.arrayUnion(userId) 
+        });
+        }
+        // Update review to Firestore
+        res.status(201).json({ message: "seccess"});
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/delReviewLikes', async (req, res) => {
+    try {
+        const { subjectId, userId,likeType,reviewId} = req.body;
+        console.log(req.body)
+        if(likeType == "like"){
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+                like:  admin.firestore.FieldValue.arrayRemove(userId) 
+            });
+        }else{
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+            dislike: admin.firestore.FieldValue.arrayRemove(userId) 
+        });
+        }
+        // Update review to Firestore
+        res.status(201).json({ message: "seccess"});
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -68,5 +108,6 @@ router.delete('/delReview', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 exports.router = router;
