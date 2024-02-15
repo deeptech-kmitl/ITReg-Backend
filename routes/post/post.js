@@ -49,7 +49,6 @@ router.post('/newPost', upload.array('images'), async (req, res) => {
                     //get url when i upload
                     const downloadURL = await getDownloadURL(file);
                     uploadedImageUrls.push(downloadURL);
-    
                 }
             }
         }
@@ -124,6 +123,34 @@ router.put('/editPost/:postId', upload.single('image'), async (req, res) => {
         res.status(200).json({ message: 'Post updated successfully' });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/newPostLikes', async (req, res) => {
+    try {
+        const { postId, userId,} = req.body;
+        console.log(req.body)
+            await db.collection(`post`).doc(postId).update({
+                like:  admin.firestore.FieldValue.arrayUnion(userId) 
+            });
+        // Update review to Firestore
+        res.status(201).json({ message: "seccess"});
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/delPostLikes', async (req, res) => {
+    try {
+        const { postId, userId,} = req.body;
+        console.log(req.body)
+            await db.collection(`post`).doc(postId).update({
+                like:  admin.firestore.FieldValue.arrayRemove(userId) 
+            });
+        // Update review to Firestore
+        res.status(201).json({ message: "seccess"});
+    } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

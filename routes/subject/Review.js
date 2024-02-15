@@ -8,7 +8,7 @@ router.get('/getReview/:subjectId', async (req, res) => {
     try {
         tempDoc = []
         const subjectId = req.params.subjectId
-        const reviewRef = await db.collection(`subjects/${subjectId}/reviews`)
+        const reviewRef = db.collection(`subjects/${subjectId}/reviews`)
         reviewRef.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 tempDoc.push({ id: doc.id, ...doc.data() })
