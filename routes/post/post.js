@@ -17,7 +17,7 @@ router.get('/post', async (req, res) => {
         const postRef = db.collection(`post`);
         postRef.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                tempDoc.push({ ...doc.data() })
+                tempDoc.push({ id: doc.id, ...doc.data() })
             })
             res.status(201).json(tempDoc);
         })
