@@ -1,6 +1,6 @@
-const { admin } = require("../Firebase/FirebaseConfig");
+const { admin, db } = require("../Firebase/FirebaseConfig");
 
-const isLoggedIn = (req, res, next) => {
+const isLoggedIn = async (req, res, next) => {
     const token = req.headers.authorization;
     if(!token){
         console.log(token);

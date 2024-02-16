@@ -149,6 +149,25 @@ router.put('/editPost/:postId', async (req, res) => {
     }
 });
 
+router.put('/editPostComment/:postId/:commentId', async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const commentId = req.params.commentId
+        const { detail, userId } = req.body;
+        const commentref = await db.collection(`posts/${postId}/comment`).doc(commentId).update({
+            userId: userId,
+            detail: detail,
+            dateTime:  admin.firestore.FieldValue.serverTimestamp()
+        })
+        const commentDoc = await db.collection(`posts/${postId}/comment`).doc(commentId).get();
+        const commentData = commentDoc.data();
+        res.status(200).send({...commentData, commentId: commentId});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 router.patch('/newPostLikes', async (req, res) => {
     try {
         const { postId, userId, } = req.body;
