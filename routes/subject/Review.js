@@ -33,7 +33,7 @@ router.post('/newReview', async (req, res) => {
             like,
             dislike
         });
-       const newReviewRef = await db.collection(`subjects/${subjectId}/reviews`).doc(reviewRef.id).get()
+        const newReviewRef = await db.collection(`subjects/${subjectId}/reviews`).doc(reviewRef.id).get()
         const returnReview = newReviewRef.data()
         returnReview.id = newReviewRef.id
         res.status(201).send(returnReview);
@@ -63,15 +63,15 @@ router.put('/editReview', async (req, res) => {
 
 router.put('/editReviewLikes', async (req, res) => {
     try {
-        const { subjectId, userId, likeType, reviewId } = req.body;
+        const { subjectId, userId, likeType,reviewId } = req.body;
         console.log(req.body)
-        if (likeType == "like") {
-            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-                like: admin.firestore.FieldValue.arrayUnion(userId)
+        if (likeType) {
+             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+                like: admin.firestore.FieldValue.arrayRemove(userId)
             });
         } else {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-                dislike: admin.firestore.FieldValue.arrayUnion(userId)
+                like: admin.firestore.FieldValue.arrayUnion(userId)
             });
         }
         // Update review to Firestore
@@ -85,13 +85,14 @@ router.put('/delReviewLikes', async (req, res) => {
     try {
         const { subjectId, userId, likeType, reviewId } = req.body;
         console.log(req.body)
-        if (likeType == "like") {
-            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
-                like: admin.firestore.FieldValue.arrayRemove(userId)
-            });
-        } else {
+        if (likeType) {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
                 dislike: admin.firestore.FieldValue.arrayRemove(userId)
+            });
+            
+        } else {
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+                dislike: admin.firestore.FieldValue.arrayUnion(userId)
             });
         }
         // Update review to Firestore
