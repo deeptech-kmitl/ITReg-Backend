@@ -73,6 +73,9 @@ router.put('/editReviewLikes', async (req, res) => {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
                 like: admin.firestore.FieldValue.arrayUnion(userId)
             });
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+                dislike: admin.firestore.FieldValue.arrayRemove(userId)
+            });
         }
         // Update review to Firestore
         res.status(201).json({ message: "seccess" });
@@ -89,10 +92,12 @@ router.put('/delReviewLikes', async (req, res) => {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
                 dislike: admin.firestore.FieldValue.arrayRemove(userId)
             });
-            
         } else {
             await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
                 dislike: admin.firestore.FieldValue.arrayUnion(userId)
+            });
+            await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
+                like: admin.firestore.FieldValue.arrayRemove(userId)
             });
         }
         // Update review to Firestore
