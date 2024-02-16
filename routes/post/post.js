@@ -14,65 +14,90 @@ const upload = multer({ storage: storage });
 router.get('/post', async (req, res) => {
     try {
         const tempDoc = [];
-        const postRef = db.collection(`post`);
-        postRef.get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                tempDoc.push({ id: doc.id, ...doc.data() })
-            })
-            res.status(201).json(tempDoc);
-        })
+        const postRef = db.collection(`posts`);
+        const querySnapshot = await postRef.orderBy("dateTime", "desc").get();
+
+        // Iterate through each post document
+        for (const doc of querySnapshot.docs) {
+            const postData = { id: doc.id, ...doc.data() };
+            // Access the nested collection
+            const commentsRef = doc.ref.collection('comment');
+            const commentsQuerySnapshot = await commentsRef.orderBy("dateTime", "desc").get();
+
+            // Create an array to store comments data
+            const commentsData = [];
+
+            // Iterate through each comment document within the nested collection
+            commentsQuerySnapshot.forEach((commentDoc) => {
+                commentsData.push({ commentId: commentDoc.id, ...commentDoc.data() });
+            });
+
+            // Add the comments data to the post data
+            postData.comments = commentsData;
+
+            // Push the structured post data to tempDoc array
+            tempDoc.push(postData);
+        }
+
+        res.status(201).json(tempDoc);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-})
+});
+
 
 router.post('/newPost', upload.array('images'), async (req, res) => {
-    try {
-        const Post = req.body.Post;
-        const images = req.files;
+    const db = admin.firestore(); // Assuming you have the admin initialized for Firebase
 
-        const uploadedImageUrls = [];
+    const transaction = await db.runTransaction(async (t) => {
+        try {
+            const Post = req.body.Post;
+            const images = req.files;
 
-        if (images){
-            for (const image of images) {
-                if (image) {
-                    const imageBuffer = image.buffer;
-                    const fileName = `images/${image.fieldname + Math.random().toString(16).slice(2)}.jpg`; // Change the extension as needed
-    
-                    const file = bucket.file(fileName);
-                    await file.save(imageBuffer, {
-                        metadata: {
-                            contentType: 'image/jpeg', // Change the content type based on your file type
-                        },
-                    });
-    
-                    //get url when i upload
-                    const downloadURL = await getDownloadURL(file);
-                    uploadedImageUrls.push(downloadURL);
+            const uploadedImageUrls = [];
+            const docId = Math.random().toString(16).slice(2)
+            if (images) {
+                for (const image of images) {
+                    if (image) {
+                        const imageBuffer = image.buffer;
+                        const fileName = `postImage/${docId}/${image.fieldname + Math.random().toString(16).slice(2)}.jpg`; // Change the extension as needed
+
+                        const file = bucket.file(fileName);
+                        await file.save(imageBuffer, {
+                            metadata: {
+                                contentType: 'image/jpeg', // Change the content type based on your file type
+                            },
+                        });
+
+                        //get url when i upload
+                        const downloadURL = await getDownloadURL(file);
+                        uploadedImageUrls.push(downloadURL);
+                    }
                 }
-            }
-        }
-        const data_post = {
-            id: req.body.id,
-            titlename: req.body.titlename,
-            name: req.body.name,
-            date: req.body.date,
-            time: req.body.time,
-            message: req.body.message,
-            image: uploadedImageUrls || [],
-            like: [],
-            comment: []
-        };
 
-        const newPost = await db.collection(`post`).add(
-            data_post
-        );
-        res.status(201).json(data_post);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+                const data_post = {
+                    titlename: req.body.titlename,
+                    name: req.body.name,
+                    message: req.body.message,
+                    image: uploadedImageUrls || [],
+                    like: [],
+                    dateTime: admin.firestore.FieldValue.serverTimestamp()
+                };
+
+                // Create a new post document with a unique ID
+                const newPostRef = db.collection('posts').doc(docId);
+
+                // Use the transaction to create the new post and update other documents if needed
+                t.set(newPostRef, data_post);
+                res.status(201).json({...data_post, id:newPostRef.id, comments:[]});
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
 });
+
 
 // DELETE route to delete a post
 router.delete('/deletePost/:postId', async (req, res) => {
@@ -80,12 +105,23 @@ router.delete('/deletePost/:postId', async (req, res) => {
         const postId = req.params.postId;
 
         // Delete post from Firestore
-        await db.collection('post').doc(postId).delete();
+        await db.collection('posts').doc(postId).delete();
 
-        // Delete corresponding image from Firebase Storage
-        const fileName = `images/${postId}.jpg`; // Change the extension as needed
-        const file = bucket.file(fileName);
-        await file.delete();
+        const folder = `images/${postId}`;
+        const file = bucket.file(folder);
+
+        // Check if the file exists
+        const exists = await file.exists();
+
+        if (exists[0]) {
+            // File exists, proceed with deletion
+            await file.delete();
+            console.log(`File ${folder} deleted successfully.`);
+        } else {
+            // File doesn't exist
+            console.log(`File ${folder} does not exist.`);
+        }
+
 
         res.status(200).json({ message: 'Post deleted successfully' });
     } catch (error) {
@@ -95,64 +131,82 @@ router.delete('/deletePost/:postId', async (req, res) => {
 });
 
 // PUT route to edit/update a post
-router.put('/editPost/:postId', upload.single('image'), async (req, res) => {
+router.put('/editPost/:postId', async (req, res) => {
     try {
         const postId = req.params.postId;
-        const { Title, createBy, description } = req.body;
-
-        // Update post in Firestore
-        await db.collection('post').doc(postId).update({
-            Title,
-            createBy,
-            description,
-        });
-
-        // Upload new image to Firebase Storage (if a new image is provided)
-        if (req.file) {
-            const imageBuffer = req.file.buffer;
-            const fileName = `images/${postId}.jpg`; // Change the extension as needed
-
-            const file = bucket.file(fileName);
-            await file.save(imageBuffer, {
-                metadata: {
-                    contentType: 'image/jpeg', // Change the content type based on your file type
-                },
-            });
-        }
-
-        res.status(200).json({ message: 'Post updated successfully' });
+        const { Title, message } = req.body;
+        const postref = await db.collection(`posts`).doc(postId).update({
+            titlename: Title,
+            message: message,
+            dateTime:  admin.firestore.FieldValue.serverTimestamp()
+        })
+        const postDoc = await db.collection(`posts`).doc(postId).get();
+        const postData = postDoc.data();
+        res.status(200).send({...postData, id: postId});
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-router.put('/newPostLikes', async (req, res) => {
+router.patch('/newPostLikes', async (req, res) => {
     try {
-        const { postId, userId,} = req.body;
+        const { postId, userId, } = req.body;
         console.log(req.body)
-            await db.collection(`post`).doc(postId).update({
-                like:  admin.firestore.FieldValue.arrayUnion(userId) 
-            });
+        await db.collection(`posts`).doc(postId).update({
+            like: admin.firestore.FieldValue.arrayUnion(userId)
+        });
         // Update review to Firestore
-        res.status(201).json({ message: "seccess"});
+        res.status(201).json({ message: "seccess" });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-router.put('/delPostLikes', async (req, res) => {
+router.patch('/delPostLikes', async (req, res) => {
     try {
-        const { postId, userId,} = req.body;
+        const { postId, userId, } = req.body;
         console.log(req.body)
-            await db.collection(`post`).doc(postId).update({
-                like:  admin.firestore.FieldValue.arrayRemove(userId) 
-            });
+        await db.collection(`posts`).doc(postId).update({
+            like: admin.firestore.FieldValue.arrayRemove(userId)
+        });
         // Update review to Firestore
-        res.status(201).json({ message: "seccess"});
+        res.status(201).json({ message: "seccess" });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+
+router.post('/newcommentPost', async (req, res) => {
+    try {
+        const { postId, detail, userId } = req.body;
+        // Save comment to Firestore
+        const commentRef = await db.collection(`posts/${postId}/comment`).add({
+            detail,
+            userId,
+            dateTime: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        const commentDoc = await db.collection(`posts/${postId}/comment`).doc(commentRef.id).get();
+        const commentData = commentDoc.data();
+        commentData.commentId = commentRef.id;
+        res.status(201).send(commentData);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delCommentPost/:postId/:commentId', async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const postId = req.params.postId;
+        console.log(postId, commentId)
+        const response = await db.collection(`posts/${postId}/comment`).doc(commentId).delete();
+        res.status(200).send("delete success")
+    } catch (error) {
+        res.send(error.message)
+    }
+})
 exports.router = router;
