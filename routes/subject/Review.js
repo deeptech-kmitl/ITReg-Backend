@@ -33,7 +33,10 @@ router.post('/newReview', async (req, res) => {
             like,
             dislike
         });
-        res.status(201).json({ message: reviewRef });
+       const newReviewRef = await db.collection(`subjects/${subjectId}/reviews`).doc(reviewRef.id).get()
+        const returnReview = newReviewRef.data()
+        returnReview.id = newReviewRef.id
+        res.status(201).send(returnReview);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -51,7 +54,8 @@ router.put('/editReview', async (req, res) => {
             rating,
             grade,
         });
-        res.status(201).json({ message: reviewRef.id });
+        const newReviewRef = await db.collection(`subjects/${subjectId}/reviews`).doc(reviewId).get()
+        res.status(201).send(newReviewRef.data());
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
@@ -103,7 +107,7 @@ router.delete('/delReview', async (req, res) => {
         console.log(req)
         // Update review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).delete();
-        res.status(201).json({ message: "success" });
+        res.status(201).json({ message: "seccess" });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
