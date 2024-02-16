@@ -43,7 +43,7 @@ router.post('/newReview', async (req, res) => {
 });
 router.put('/editReview', async (req, res) => {
     try {
-        const { subjectId, userId, content, rating, grade, reviewId } = req.body;
+        const { subjectId, userId, content, rating, grade, reviewId ,edit} = req.body;
         console.log(req.body)
         // Update review to Firestore
         const reviewRef = await db.collection(`subjects/${subjectId}/reviews/`).doc(reviewId).update({
@@ -53,6 +53,7 @@ router.put('/editReview', async (req, res) => {
             content,
             rating,
             grade,
+            edit:edit
         });
         const newReviewRef = await db.collection(`subjects/${subjectId}/reviews`).doc(reviewId).get()
         res.status(201).send(newReviewRef.data());
