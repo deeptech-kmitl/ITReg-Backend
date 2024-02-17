@@ -48,54 +48,59 @@ router.get('/post', async (req, res) => {
 
 router.post('/newPost', upload.array('images'), async (req, res) => {
     const db = admin.firestore(); // Assuming you have the admin initialized for Firebase
-
-    const transaction = await db.runTransaction(async (t) => {
-        try {
-            const Post = req.body.Post;
-            const images = req.files;
-
-            const uploadedImageUrls = [];
-            const docId = Math.random().toString(16).slice(2)
-            if (images) {
-                for (const image of images) {
-                    if (image) {
-                        const imageBuffer = image.buffer;
-                        const fileName = `postImage/${docId}/${image.fieldname + Math.random().toString(16).slice(2)}.jpg`; // Change the extension as needed
-
-                        const file = bucket.file(fileName);
-                        await file.save(imageBuffer, {
-                            metadata: {
-                                contentType: 'image/jpeg', // Change the content type based on your file type
-                            },
-                        });
-
-                        //get url when i upload
-                        const downloadURL = await getDownloadURL(file);
-                        uploadedImageUrls.push(downloadURL);
+    try {
+        const docId = Math.random().toString(16).slice(2)
+        const transaction = await db.runTransaction(async (t) => {
+            try {
+                const Post = req.body.Post;
+                const images = req.files;
+    
+                const uploadedImageUrls = [];
+                if (images) {
+                    for (const image of images) {
+                        if (image) {
+                            const imageBuffer = image.buffer;
+                            const fileName = `postImage/${docId}/${image.fieldname + Math.random().toString(16).slice(2)}.jpg`; // Change the extension as needed
+    
+                            const file = bucket.file(fileName);
+                            await file.save(imageBuffer, {
+                                metadata: {
+                                    contentType: 'image/jpeg', // Change the content type based on your file type
+                                },
+                            });
+    
+                            //get url when i upload
+                            const downloadURL = await getDownloadURL(file);
+                            uploadedImageUrls.push(downloadURL);
+                        }
                     }
+    
+                    const data_post = {
+                        titlename: req.body.titlename,
+                        name: req.body.name,
+                        message: req.body.message,
+                        image: uploadedImageUrls || [],
+                        like: [],
+                        dateTime: admin.firestore.FieldValue.serverTimestamp()
+                    };
+    
+                    // Create a new post document with a unique ID
+                    const newPostRef = db.collection('posts').doc(docId);
+    
+                    // Use the transaction to create the new post and update other documents if needed
+                    t.set(newPostRef, data_post);
                 }
-
-                const data_post = {
-                    titlename: req.body.titlename,
-                    name: req.body.name,
-                    message: req.body.message,
-                    image: uploadedImageUrls || [],
-                    like: [],
-                    dateTime: admin.firestore.FieldValue.serverTimestamp()
-                };
-
-                // Create a new post document with a unique ID
-                const newPostRef = db.collection('posts').doc(docId);
-
-                // Use the transaction to create the new post and update other documents if needed
-                t.set(newPostRef, data_post);
-                res.status(201).json({...data_post, id:newPostRef.id, comments:[]});
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: 'Internal Server Error' });
             }
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    });
+        });
+        const postref = await db.collection('posts').doc(docId).get();
+        console.log(postref.data());
+        res.status(201).json({ ...postref.data(), id: docId, comments: [] });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 
@@ -138,11 +143,11 @@ router.put('/editPost/:postId', async (req, res) => {
         const postref = await db.collection(`posts`).doc(postId).update({
             titlename: Title,
             message: message,
-            dateTime:  admin.firestore.FieldValue.serverTimestamp()
+            dateTime: admin.firestore.FieldValue.serverTimestamp()
         })
         const postDoc = await db.collection(`posts`).doc(postId).get();
         const postData = postDoc.data();
-        res.status(200).send({...postData, id: postId});
+        res.status(200).send({ ...postData, id: postId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -157,11 +162,11 @@ router.put('/editPostComment/:postId/:commentId', async (req, res) => {
         const commentref = await db.collection(`posts/${postId}/comment`).doc(commentId).update({
             userId: userId,
             detail: detail,
-            dateTime:  admin.firestore.FieldValue.serverTimestamp()
+            dateTime: admin.firestore.FieldValue.serverTimestamp()
         })
         const commentDoc = await db.collection(`posts/${postId}/comment`).doc(commentId).get();
         const commentData = commentDoc.data();
-        res.status(200).send({...commentData, commentId: commentId});
+        res.status(200).send({ ...commentData, commentId: commentId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
