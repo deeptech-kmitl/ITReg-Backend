@@ -112,21 +112,14 @@ router.delete('/deletePost/:postId', async (req, res) => {
         // Delete post from Firestore
         await db.collection('posts').doc(postId).delete();
 
-        const folder = `images/${postId}`;
-        const file = bucket.file(folder);
+        // Delete files from Google Cloud Storage with a specific prefix
+        const prefix = `postImage/${postId}/`;
 
-        // Check if the file exists
-        const exists = await file.exists();
+        await bucket.deleteFiles({
+            prefix: prefix,
+        });
 
-        if (exists[0]) {
-            // File exists, proceed with deletion
-            await file.delete();
-            console.log(`File ${folder} deleted successfully.`);
-        } else {
-            // File doesn't exist
-            console.log(`File ${folder} does not exist.`);
-        }
-
+        console.log(`Files and folder with prefix ${prefix} deleted successfully.`);
 
         res.status(200).json({ message: 'Post deleted successfully' });
     } catch (error) {
