@@ -14,6 +14,14 @@ router.get('/getStudyPlan/:year', async (req, res) => {
         course,
         yearStudy,
     } = req.query;
+    console.log("Course year: " + courseYear)
+    console.log({
+        year,
+        term,
+        coop,
+        course,
+        yearStudy
+    })
 
     const courseDataMap = {
         '2560': {
@@ -34,11 +42,20 @@ router.get('/getStudyPlan/:year', async (req, res) => {
         console.log(`${course} ${courseYear}`);
         const data = require(path);
         const filterSubjects = data.filter(item => {
-            return item.semeter === parseInt(term) &&
-                item.year === parseInt(yearStudy) &&
-                item.cooperativeEducation === (coop === 'coop');
+
+            if (courseYear === '2565') {
+                console.log('2565')
+                return item.semeter === parseInt(term) &&
+                    item.year === parseInt(yearStudy)
+            } else {
+                console.log('2560')
+                return item.semeter === parseInt(term) &&
+                    item.year === parseInt(yearStudy) &&
+                    item.cooperativeEducation === (coop === 'coop');
+            }
+
         });
-        console.log(filterSubjects);
+        // console.log(filterSubjects);
 
         res.status(201).json(filterSubjects);
 

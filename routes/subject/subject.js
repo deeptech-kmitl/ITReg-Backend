@@ -9,7 +9,11 @@ router.get('/getAllSubjects', async (req, res) => {
     const dataBit = require("../../subjectBit.json")
     const dataDsba = require("../../subjectDsba.json")
     const dataSec = require("../../subjectSelection.json")
-    const data = dataIt.concat(dataBit).concat(dataDsba).concat(dataSec)
+    const dataIt2565 = require("../../subject/2565/subjectIT.json")
+    const dataDsba2565 = require("../../subject/2565/subjectDsba.json")
+    const dataBit2565 = require("../../subject/2565/subjectBit.json")
+    const dataGened = require("../../subject/2565/subjectGened.json")
+    const data = dataIt.concat(dataBit).concat(dataDsba).concat(dataSec).concat(dataIt2565).concat(dataDsba2565).concat(dataBit2565).concat(dataGened)
     const filteredData = data.filter(item => /^\d+$/.test(item.subjectId));
     const unique = filteredData.filter((obj, index) => {
         return index === filteredData.findIndex(o => obj.subjectId === o.subjectId);
