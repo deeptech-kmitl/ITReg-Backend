@@ -2,7 +2,6 @@ const express = require('express');
 const { getStorage, getDownloadURL } = require('firebase-admin/storage');
 const cors = require("cors");
 
-
 const app = express();
 const port = 3001; // Set your desired port number
 
@@ -19,12 +18,14 @@ const question = require("./routes/subject/question.js")
 const answer = require("./routes/subject/answer.js")
 const post = require("./routes/post/post.js")
 const review = require("./routes/subject/Review.js")
+const studyPlan = require("./routes/subject/studyPlan.js")
 app.use(authenticationRouter.router);
 app.use(subject.router)
 app.use(question.router)
 app.use(answer.router)
 app.use(post.router)
 app.use(review.router)
+app.use(studyPlan.router)
 //
 
 
