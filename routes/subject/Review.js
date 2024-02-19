@@ -2,7 +2,7 @@ const express = require("express");
 const { auth } = require("firebase-admin");
 const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
-router = express.Router();
+const router = express.Router();
 
 router.get('/getReview/:subjectId', async (req, res) => {
     try {
