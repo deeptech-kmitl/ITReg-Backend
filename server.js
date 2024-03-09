@@ -29,25 +29,25 @@ app.use(studyPlan.router)
 //
 
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.send('Hello, this is your backend!');
   });
 
-app.post('/api/create', async (req, res) => {
-  // const { name, email, password } = req.body;
-  const user = { name:"rome" };
-  const userRef = await db.collection('users').add(user);
-  const userDoc = await userRef.get();
-  res.send(userDoc.data());
+// app.post('/api/create', async (req, res) => {
+//   // const { name, email, password } = req.body;
+//   const user = { name:"rome" };
+//   const userRef = await db.collection('users').add(user);
+//   const userDoc = await userRef.get();
+//   res.send(userDoc.data());
 
-});
+// });
 
-app.get('/api/img', async (req, res) => {
-  const fileRef = bucket.file('Python-Imports_Watermarked.ae72c8a00197.jpg');
-  const downloadURL= await getDownloadURL(fileRef);
-  console.log(downloadURL);
-  res.send(downloadURL);
-});
+// app.get('/api/img', async (req, res) => {
+//   const fileRef = bucket.file('Python-Imports_Watermarked.ae72c8a00197.jpg');
+//   const downloadURL= await getDownloadURL(fileRef);
+//   console.log(downloadURL);
+//   res.send(downloadURL);
+// });
 
 
 

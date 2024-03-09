@@ -4,7 +4,7 @@ const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
 
-router.get('/getReview/:subjectId', async (req, res) => {
+router.get('/api/getReview/:subjectId', async (req, res) => {
     try {
         tempDoc = []
         const subjectId = req.params.subjectId
@@ -19,7 +19,7 @@ router.get('/getReview/:subjectId', async (req, res) => {
         res.status(500).json({ error: error });
     }
 });
-router.post('/newReview', async (req, res) => {
+router.post('/api/newReview', async (req, res) => {
     try {
         const { subjectId, userId, content, rating, grade, like, dislike } = req.body;
         // Save review to Firestore
@@ -41,7 +41,7 @@ router.post('/newReview', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-router.put('/editReview', async (req, res) => {
+router.put('/api/editReview', async (req, res) => {
     try {
         const { subjectId, userId, content, rating, grade, reviewId ,edit} = req.body;
         console.log(req.body)
@@ -62,7 +62,7 @@ router.put('/editReview', async (req, res) => {
     }
 });
 
-router.put('/editReviewLikes', async (req, res) => {
+router.put('/api/editReviewLikes', async (req, res) => {
     try {
         const { subjectId, userId, likeType,reviewId } = req.body;
         console.log(req.body)
@@ -85,7 +85,7 @@ router.put('/editReviewLikes', async (req, res) => {
     }
 });
 
-router.put('/delReviewLikes', async (req, res) => {
+router.put('/api/delReviewLikes', async (req, res) => {
     try {
         const { subjectId, userId, likeType, reviewId } = req.body;
         console.log(req.body)
@@ -108,7 +108,7 @@ router.put('/delReviewLikes', async (req, res) => {
     }
 });
 
-router.delete('/delReview', async (req, res) => {
+router.delete('/api/delReview', async (req, res) => {
     try {
         const { subjectId, reviewId } = req.body;
         console.log(req)

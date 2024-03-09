@@ -4,14 +4,14 @@ const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
 //// Subjects
-router.get('/getAllSubjects', async (req, res) => {
+router.get('/api/getAllSubjects', async (req, res) => {
     const dataIt = require("../../subjectIT.json")
     const dataBit = require("../../subjectBit.json")
     const dataDsba = require("../../subjectDsba.json")
     const dataSec = require("../../subjectSelection.json")
     const dataIt2565 = require("../../subject/2565/subjectIT.json")
     const dataDsba2565 = require("../../subject/2565/subjectDsba.json")
-    const dataBit2565 = require("../../subject/2565/subjectBit.json")
+    const dataBit2565 = require("../../subject/2565/subjectBIT.json")
     const dataGened = require("../../subject/2565/subjectGened.json")
     const data = dataIt.concat(dataBit).concat(dataDsba).concat(dataSec).concat(dataIt2565).concat(dataDsba2565).concat(dataBit2565).concat(dataGened)
     const filteredData = data.filter(item => /^\d+$/.test(item.subjectId));
@@ -33,7 +33,7 @@ router.get('/getAllSubjects', async (req, res) => {
     //     res.status(500).json({ error: 'Internal Server Error' });
     // }
 });
-router.get('/getSubjects/:subjectId', async (req, res) => {
+router.get('/api/getSubjects/:subjectId', async (req, res) => {
     const subjectsRef = db.collection('subjects/14jMRogrxlCCUOqtOwHv').get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             // doc.data() is the data of the document
@@ -46,7 +46,7 @@ router.get('/getSubjects/:subjectId', async (req, res) => {
         });
 })
 
-router.post('/addSubject', async (req, res) => {
+router.post('/api/addSubject', async (req, res) => {
 
     try {
         const data = require("../../testSubject.json")
@@ -60,7 +60,7 @@ router.post('/addSubject', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-router.post('/addASubject', async (req, res) => {
+router.post('/api/addASubject', async (req, res) => {
 
     try {
         console.log("asd")
@@ -72,7 +72,7 @@ router.post('/addASubject', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-router.delete('/removeAllSubject', async (req, res) => {
+router.delete('/api/removeAllSubject', async (req, res) => {
 
     const subjectsRef = await db.collection('subjects');
     // Delete all documents in the collection

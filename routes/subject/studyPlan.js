@@ -4,7 +4,7 @@ const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
 
-router.get('/getStudyPlan/:year', async (req, res) => {
+router.get('api/getStudyPlan/:year', async (req, res) => {
 
     const courseYear = req.params.year;
     const {
@@ -32,7 +32,7 @@ router.get('/getStudyPlan/:year', async (req, res) => {
         '2565': {
             'it': "../../subject/2565/subjectIT.json",
             'dsba': "../../subject/2565/subjectDsba.json",
-            'bit': "../../subject/2565/subjectBit.json"
+            'bit': "../../subject/2565/subjectBIT.json"
         }
     };
 

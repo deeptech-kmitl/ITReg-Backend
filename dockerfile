@@ -1,13 +1,20 @@
-FROM node:latest
+# Use Node.js image as base
+FROM node:14-alpine
 
-WORKDIR /usr/src/app
+# Set working directory
+WORKDIR /app
 
+# Copy package.json and package-lock.json to container
 COPY package*.json ./
 
-RUN npm install
+# Install dependencies
+RUN npm install --production
 
+# Copy the entire application to container
 COPY . .
 
+# Expose port 5000
 EXPOSE 3001
 
+# Command to run the Express server
 CMD ["node", "server.js"]
