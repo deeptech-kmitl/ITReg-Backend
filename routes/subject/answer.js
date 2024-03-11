@@ -3,7 +3,7 @@ const { auth } = require("firebase-admin");
 const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
-router.get('/api/getAnswers/:subjectId/:questionId', async (req, res) => {
+router.get('/getAnswers/:subjectId/:questionId', async (req, res) => {
     try {
         const tempDoc = []
         const comment = db.collection(`subjects/${req.params.subjectId}/questions/${req.params.questionId}/answers`)
@@ -19,7 +19,7 @@ router.get('/api/getAnswers/:subjectId/:questionId', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
-router.post('/api/answer', async (req, res) => {
+router.post('/answer', async (req, res) => {
     try {
         const { subjectId, questionId, detail, userId } = req.body;
         // Save comment to Firestore
@@ -39,7 +39,7 @@ router.post('/api/answer', async (req, res) => {
 });
 
 //Edit 
-router.put('/api/answer', async (req, res) => {
+router.put('/answer', async (req, res) => {
     console.log(req.body)
     try {
         const { subjectId, userId, detail, questionId, answerId } = req.body;
@@ -59,7 +59,7 @@ router.put('/api/answer', async (req, res) => {
 });
 
 //Delete
-router.delete('/api/answer', async (req, res) => {
+router.delete('/answer', async (req, res) => {
     console.log(req.body)
     try {
         const { subjectId, questionId, answerId } = req.body;

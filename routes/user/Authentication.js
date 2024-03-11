@@ -4,7 +4,7 @@ const { admin }  = require("../../Firebase/FirebaseConfig")
 const { isLoggedIn } = require("../../middlewares/index")
 router = express.Router();
 
-router.post('/api/register', async (req, res) => {
+router.post('/register', async (req, res) => {
     try {
         const { email, password } = req.body;
         const userRecord = await admin.auth().createUser({

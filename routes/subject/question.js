@@ -4,7 +4,7 @@ const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
 
-router.get('/api/getQuestions/:subjectId', async (req, res) => {
+router.get('/getQuestions/:subjectId', async (req, res) => {
     const tempDoc = [];
 
     try {
@@ -32,7 +32,7 @@ router.get('/api/getQuestions/:subjectId', async (req, res) => {
 
 })
 ///// Questions
-router.post('/api/question', async (req, res) => {
+router.post('/question', async (req, res) => {
     try {
         const { subjectId, userId, detail } = req.body;
 
@@ -53,7 +53,7 @@ router.post('/api/question', async (req, res) => {
 });
 
 //Edit 
-router.put('/api/question', async (req, res) => {
+router.put('/question', async (req, res) => {
     console.log(req.body)
     try {
         const { subjectId, userId, detail, questionId } = req.body;
@@ -73,7 +73,7 @@ router.put('/api/question', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-router.patch('/api/likeQuestion', async (req, res) => {
+router.patch('/likeQuestion', async (req, res) => {
     try {
         const { subjectId, userId, likeType, questionId } = req.body;
         console.log(req.body)
@@ -95,7 +95,7 @@ router.patch('/api/likeQuestion', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
-router.patch('/api/dislikeQuestion', async (req, res) => {
+router.patch('/dislikeQuestion', async (req, res) => {
     try {
         const { subjectId, userId, likeType, questionId } = req.body;
         console.log(req.body)
@@ -118,7 +118,7 @@ router.patch('/api/dislikeQuestion', async (req, res) => {
     }
 });
 //Delete
-router.delete('/api/question', async (req, res) => {
+router.delete('/question', async (req, res) => {
     console.log(req.body)
     try {
         const { subjectId, questionId } = req.body;

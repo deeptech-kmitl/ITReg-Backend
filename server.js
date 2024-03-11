@@ -19,19 +19,19 @@ const answer = require("./routes/subject/answer.js")
 const post = require("./routes/post/post.js")
 const review = require("./routes/subject/Review.js")
 const studyPlan = require("./routes/subject/studyPlan.js")
-app.use(authenticationRouter.router);
-app.use(subject.router)
-app.use(question.router)
-app.use(answer.router)
-app.use(post.router)
-app.use(review.router)
-app.use(studyPlan.router)
+app.use("/api", authenticationRouter.router);
+app.use("/api", subject.router)
+app.use("/api", question.router)
+app.use("/api", answer.router)
+app.use("/api", post.router)
+app.use("/api", review.router)
+app.use("/api", studyPlan.router)
 //
 
 
-app.get('/api', (req, res) => {
-    res.send('Hello, this is your backend!');
-  });
+// app.get('/', (req, res) => {
+//     res.send('Hello, this is your backend!');
+//   });
 
 // app.post('/api/create', async (req, res) => {
 //   // const { name, email, password } = req.body;

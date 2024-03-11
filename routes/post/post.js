@@ -11,7 +11,7 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.get('/api/post', async (req, res) => {
+router.get('/post', async (req, res) => {
     try {
         const tempDoc = [];
         const postRef = db.collection(`posts`);
@@ -46,7 +46,7 @@ router.get('/api/post', async (req, res) => {
 });
 
 
-router.post('/api/newPost', upload.array('images'), async (req, res) => {
+router.post('/newPost', upload.array('images'), async (req, res) => {
     const db = admin.firestore(); // Assuming you have the admin initialized for Firebase
     try {
         const docId = Math.random().toString(16).slice(2)
@@ -105,7 +105,7 @@ router.post('/api/newPost', upload.array('images'), async (req, res) => {
 
 
 // DELETE route to delete a post
-router.delete('/api/deletePost/:postId', async (req, res) => {
+router.delete('/deletePost/:postId', async (req, res) => {
     try {
         const postId = req.params.postId;
 
@@ -129,7 +129,7 @@ router.delete('/api/deletePost/:postId', async (req, res) => {
 });
 
 // PUT route to edit/update a post
-router.put('/api/editPost/:postId', async (req, res) => {
+router.put('/editPost/:postId', async (req, res) => {
     try {
         const postId = req.params.postId;
         const { Title, message } = req.body;
@@ -147,7 +147,7 @@ router.put('/api/editPost/:postId', async (req, res) => {
     }
 });
 
-router.put('/api/editPostComment/:postId/:commentId', async (req, res) => {
+router.put('/editPostComment/:postId/:commentId', async (req, res) => {
     try {
         const postId = req.params.postId;
         const commentId = req.params.commentId
@@ -166,7 +166,7 @@ router.put('/api/editPostComment/:postId/:commentId', async (req, res) => {
     }
 });
 
-router.patch('/api/newPostLikes', async (req, res) => {
+router.patch('/newPostLikes', async (req, res) => {
     try {
         const { postId, userId, } = req.body;
         console.log(req.body)
@@ -180,7 +180,7 @@ router.patch('/api/newPostLikes', async (req, res) => {
     }
 });
 
-router.patch('/api/delPostLikes', async (req, res) => {
+router.patch('/delPostLikes', async (req, res) => {
     try {
         const { postId, userId, } = req.body;
         console.log(req.body)
@@ -195,7 +195,7 @@ router.patch('/api/delPostLikes', async (req, res) => {
 });
 
 
-router.post('/api/newcommentPost', async (req, res) => {
+router.post('/newcommentPost', async (req, res) => {
     try {
         const { postId, detail, userId } = req.body;
         // Save comment to Firestore
@@ -215,7 +215,7 @@ router.post('/api/newcommentPost', async (req, res) => {
     }
 })
 
-router.delete('/api/delCommentPost/:postId/:commentId', async (req, res) => {
+router.delete('/delCommentPost/:postId/:commentId', async (req, res) => {
     try {
         const commentId = req.params.commentId;
         const postId = req.params.postId;

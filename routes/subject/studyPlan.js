@@ -4,7 +4,7 @@ const { admin } = require("../../Firebase/FirebaseConfig.js")
 const { db } = require('../../Firebase/FirebaseConfig.js');
 router = express.Router();
 
-router.get('api/getStudyPlan/:year', async (req, res) => {
+router.get('/getStudyPlan/:year', async (req, res) => {
 
     const courseYear = req.params.year;
     const {
