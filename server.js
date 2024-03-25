@@ -29,9 +29,9 @@ app.use("/api", studyPlan.router)
 //
 
 
-// app.get('/', (req, res) => {
-//     res.send('Hello, this is your backend!');
-//   });
+app.get('/', (req, res) => {
+    res.send('Hello, this is your backend!');
+  });
 
 // app.post('/api/create', async (req, res) => {
 //   // const { name, email, password } = req.body;
