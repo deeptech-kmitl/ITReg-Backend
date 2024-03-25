@@ -11,11 +11,7 @@ const { bucket } = require('./Firebase/FirebaseConfig.js');
 app.use(cors());
 app.use(express.json());
 
-// Define Permissions-Policy headers
-app.use((req, res, next) => {
-  res.setHeader('Permissions-Policy', 'interest-cohort=()'); // Adjust or remove as necessary
-  next();
-});
+
 
 // Define routes (assuming these are your API endpoints)
 const authenticationRouter = require('./routes/user/Authentication.js');
