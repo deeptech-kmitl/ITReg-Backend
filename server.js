@@ -8,7 +8,7 @@ const port = 3000; // Set your desired port number
 const { db } = require('./Firebase/FirebaseConfig.js');
 const {bucket} = require('./Firebase/FirebaseConfig.js');
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 
 
