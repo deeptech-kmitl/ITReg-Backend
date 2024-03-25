@@ -3,7 +3,7 @@ const { getStorage, getDownloadURL } = require('firebase-admin/storage');
 const cors = require("cors");
 
 const app = express();
-const port = 3001; // Set your desired port number
+const port = 3000; // Set your desired port number
 
 const { db } = require('./Firebase/FirebaseConfig.js');
 const {bucket} = require('./Firebase/FirebaseConfig.js');
